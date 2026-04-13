@@ -1,0 +1,1 @@
+export const renderCreate = (container) => { container.innerHTML = ` <h2>Crear publicación</h2> <p> </p> `; };

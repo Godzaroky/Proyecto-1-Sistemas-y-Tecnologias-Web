@@ -1,0 +1,1 @@
+export const renderHome = (container) => { container.innerHTML = ` <h2>Inicio</h2> <p> </p> `; };
