@@ -67,12 +67,12 @@ El objetivo principal es aplicar conceptos fundamentales del desarrollo web util
 La aplicación está diseñada para ofrecer una experiencia de usuario clara e interactiva, incorporando navegación entre vistas, filtrado de contenido y retroalimentación visual en cada acción realizada.
 
 **Funcionalidades principales:**
-- 📋 Listado paginado de publicaciones con skeleton loader
-- 🔍 Vista de detalle con información completa
-- ✏️ Creación y edición de publicaciones con validaciones
-- 🗑️ Eliminación con confirmación explícita
-- 🔎 Búsqueda y filtros combinables
-- 💬 Feedback visual: estados de carga, éxito y error
+- Listado paginado de publicaciones con skeleton loader
+- Vista de detalle con información completa
+- Creación y edición de publicaciones con validaciones
+- Eliminación con confirmación explícita
+- Búsqueda y filtros combinables
+- Feedback visual: estados de carga, éxito y error
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
