@@ -25,7 +25,7 @@ export const renderDetail = async (container, id) => {
                     <p class="detail__body">${post.body}</p>
 
                     <div class="detail__tags">
-                        ${post.tags.map(tag => <span class="tag">${tag}</span>).join("")}
+                        ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}
                     </div>
                 </article>
 
@@ -51,7 +51,7 @@ export const renderDetail = async (container, id) => {
 
 const bindEvents = (id) => {
     document.getElementById("edit-btn").addEventListener("click", () => {
-        window.location.hash = #/post/${id}/edit;
+        window.location.hash = `#/post/${id}/edit`;
     });
 
     document.getElementById("delete-btn").addEventListener("click", () => {

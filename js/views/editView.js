@@ -69,7 +69,7 @@ const bindEvents = (id) => {
 
             showToast("Post actualizado correctamente.");
             setTimeout(() => {
-                window.location.hash = #/post/${id};
+                window.location.hash = `#/post/${id}`;
             }, 1000);
 
         } catch (error) {
