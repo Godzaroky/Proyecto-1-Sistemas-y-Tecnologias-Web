@@ -210,7 +210,7 @@ Distribuido bajo la licencia MIT. Ver `LICENSE.txt` para más información.
 
 **Integrante 1** — [@github_username](https://github.com/Godzaroky)
 
-**Integrante 2** — [@github_username](#)
+**Integrante 2** — [@CasUVG220](https://github.com/CasUVG220)
 
 Project Link: [https://github.com/Godzaroky/Proyecto-1-Sistemas-y-Tecnologias-Web](https://github.com/Godzaroky/Proyecto-1-Sistemas-y-Tecnologias-Web)
 
