@@ -19,7 +19,7 @@
     <a href="https://github.com/Godzaroky/Proyecto-1-Sistemas-y-Tecnologias-Web"><strong>Explorar el repositorio »</strong></a>
     <br />
     <br />
-    <a href="https://69e174b4d738722e8c7099ec--zesty-lolly-f1df68.netlify.app/">Ver Demo</a>
+    <a href="https://69e18d5dc64d2098d17bcbf9--proyecto1-crude-blog-app.netlify.app/">Ver Demo</a>
     ·
     <a href="https://github.com/Godzaroky/Proyecto-1-Sistemas-y-Tecnologias-Web/issues/new?labels=bug">Reportar Bug</a>
     ·
