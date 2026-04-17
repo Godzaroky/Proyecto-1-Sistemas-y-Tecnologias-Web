@@ -1,11 +1,11 @@
 import { getPostById, getUserById, deletePost } from "../api.js";
 import { showSpinner, showError, showToast } from "../ui.js";
 
-export const renderDetail = async (container, id) => {
+export const renderDetail = async (container, id, overrideData = null) => {
     showSpinner(container);
 
     try {
-        const post = await getPostById(id);
+        const post = overrideData || await getPostById(id);
         const user = await getUserById(post.userId);
 
         container.innerHTML = `
@@ -36,20 +36,22 @@ export const renderDetail = async (container, id) => {
 
                 <div id="confirm-delete" class="confirm-box hidden">
                     <p>¿Estás seguro que quieres eliminar este post?</p>
-                    <button id="confirm-yes" class="btn btn--danger">Sí, eliminar</button>
-                    <button id="confirm-no" class="btn btn--secondary">Cancelar</button>
+                    <div>
+                        <button id="confirm-yes" class="btn btn--danger">Sí, eliminar</button>
+                        <button id="confirm-no" class="btn btn--secondary">Cancelar</button>
+                    </div>
                 </div>
             </section>
         `;
 
-        bindEvents(id);
+        bindEvents(container, id);
 
     } catch (error) {
         showError(container);
     }
 };
 
-const bindEvents = (id) => {
+const bindEvents = (container, id) => {
     document.getElementById("edit-btn").addEventListener("click", () => {
         window.location.hash = `#/post/${id}/edit`;
     });
@@ -66,9 +68,18 @@ const bindEvents = (id) => {
         try {
             await deletePost(id);
             showToast("Post eliminado correctamente.");
+
+            // Limpia el contenido del detalle inmediatamente
+            container.innerHTML = `
+                <div class="empty-state">
+                    <p class="empty-state__message">Post eliminado. Redirigiendo...</p>
+                </div>
+            `;
+
             setTimeout(() => {
                 window.location.hash = "#/";
             }, 1000);
+
         } catch (error) {
             showToast("Error al eliminar el post.", "error");
         }

@@ -1,6 +1,7 @@
 import { getPostById, updatePost } from "../api.js";
 import { showSpinner, showError, showToast } from "../ui.js";
 import { validatePostForm } from "../validation.js";
+import { renderDetail } from "./detailView.js";
 
 export const renderEdit = async (container, id) => {
     showSpinner(container);
@@ -38,14 +39,14 @@ export const renderEdit = async (container, id) => {
             </section>
         `;
 
-        bindEvents(id);
+        bindEvents(container, id, post);
 
     } catch (error) {
         showError(container);
     }
 };
 
-const bindEvents = (id) => {
+const bindEvents = (container, id, originalPost) => {
     document.getElementById("edit-form").addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -67,9 +68,17 @@ const bindEvents = (id) => {
                 body: fields.body.trim(),
             });
 
+            // Construye el post actualizado localmente
+            const updatedPost = {
+                ...originalPost,
+                title: fields.title.trim(),
+                body: fields.body.trim(),
+            };
+
             showToast("Post actualizado correctamente.");
             setTimeout(() => {
-                window.location.hash = `#/post/${id}`;
+                history.replaceState(null, "", `#/post/${id}`);
+                renderDetail(container, id, updatedPost);
             }, 1000);
 
         } catch (error) {
