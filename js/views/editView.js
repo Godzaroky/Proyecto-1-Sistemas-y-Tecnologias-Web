@@ -2,12 +2,32 @@ import { getPostById, updatePost } from "../api.js";
 import { showSpinner, showError, showToast } from "../ui.js";
 import { validatePostForm } from "../validation.js";
 import { renderDetail } from "./detailView.js";
+import { getLocalPost, updateLocalPost, isLocalPost } from "../store.js";
 
 export const renderEdit = async (container, id) => {
     showSpinner(container);
 
     try {
-        const post = await getPostById(id);
+        // Verificar si existe un override local (post creado o editado localmente)
+        const localData = getLocalPost(id);
+
+        let post;
+        if (localData && localData._deleted) {
+            showError(container, "Este post ha sido eliminado.");
+            return;
+        } else if (localData && !localData._override) {
+            // Es un post creado localmente (tiene todos los datos)
+            post = localData;
+        } else {
+            // Obtener de la API y aplicar overrides locales
+            post = await getPostById(id);
+            if (localData && localData._override) {
+                const { _override, ...overrides } = localData;
+                post = { ...post, ...overrides };
+            }
+        }
+
+        const authorValue = post._authorName || `Usuario ${post.userId}`;
 
         container.innerHTML = `
             <section class="form-view">
@@ -28,7 +48,7 @@ export const renderEdit = async (container, id) => {
 
                     <div class="form__group">
                         <label for="author">Autor</label>
-                        <input type="text" id="author" class="input" value="Usuario ${post.userId}" />
+                        <input type="text" id="author" class="input" value="${authorValue}" />
                     </div>
 
                     <div class="form__actions">
@@ -63,16 +83,27 @@ const bindEvents = (container, id, originalPost) => {
         submitBtn.textContent = "Guardando...";
 
         try {
-            await updatePost(id, {
+            // Solo llamar a la API si el post existe en el servidor (no es local)
+            if (!isLocalPost(id)) {
+                await updatePost(id, {
+                    title: fields.title.trim(),
+                    body: fields.body.trim(),
+                });
+            }
+
+            // Guardar los cambios localmente para que persistan
+            updateLocalPost(id, {
                 title: fields.title.trim(),
                 body: fields.body.trim(),
+                _authorName: fields.author.trim(),
             });
 
-            // Construye el post actualizado localmente
+            // Construir el post actualizado para mostrar inmediatamente
             const updatedPost = {
                 ...originalPost,
                 title: fields.title.trim(),
                 body: fields.body.trim(),
+                _authorName: fields.author.trim(),
             };
 
             showToast("Post actualizado correctamente.");

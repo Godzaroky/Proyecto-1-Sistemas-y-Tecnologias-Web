@@ -1,12 +1,50 @@
 import { getPostById, getUserById, deletePost } from "../api.js";
 import { showSpinner, showError, showToast } from "../ui.js";
+import { getLocalPost, deleteLocalPost, isLocalPost } from "../store.js";
 
 export const renderDetail = async (container, id, overrideData = null) => {
     showSpinner(container);
 
     try {
-        const post = overrideData || await getPostById(id);
-        const user = await getUserById(post.userId);
+        let post;
+        let user;
+
+        if (overrideData) {
+            // Datos pasados directamente (e.g. después de editar)
+            post = overrideData;
+        } else {
+            // Verificar estado local primero
+            const localData = getLocalPost(id);
+
+            if (localData && localData._deleted) {
+                showError(container, "Este post ha sido eliminado.");
+                return;
+            } else if (localData && !localData._override) {
+                // Post creado localmente (tiene todos los datos)
+                post = localData;
+            } else {
+                // Obtener de la API
+                post = await getPostById(id);
+                // Aplicar overrides locales si existen
+                if (localData && localData._override) {
+                    const { _override, ...overrides } = localData;
+                    post = { ...post, ...overrides };
+                }
+            }
+        }
+
+        // Determinar el nombre del autor
+        let authorName;
+        if (post._authorName) {
+            authorName = post._authorName;
+        } else {
+            try {
+                user = await getUserById(post.userId);
+                authorName = `${user.firstName} ${user.lastName}`;
+            } catch (_) {
+                authorName = `Usuario ${post.userId}`;
+            }
+        }
 
         container.innerHTML = `
             <section class="detail">
@@ -16,7 +54,7 @@ export const renderDetail = async (container, id, overrideData = null) => {
                     <h2 class="detail__title">${post.title}</h2>
 
                     <div class="detail__meta">
-                        <span>Autor: ${user.firstName} ${user.lastName}</span>
+                        <span>Autor: ${authorName}</span>
                         <span>Vistas: ${post.views}</span>
                         <span>Likes: ${post.reactions.likes}</span>
                         <span>Dislikes: ${post.reactions.dislikes}</span>
@@ -66,7 +104,14 @@ const bindEvents = (container, id) => {
 
     document.getElementById("confirm-yes").addEventListener("click", async () => {
         try {
-            await deletePost(id);
+            // Solo llamar a la API si el post existe en el servidor (no es local)
+            if (!isLocalPost(id)) {
+                await deletePost(id);
+            }
+
+            // Marcar como eliminado localmente
+            deleteLocalPost(id);
+
             showToast("Post eliminado correctamente.");
 
             // Limpia el contenido del detalle inmediatamente

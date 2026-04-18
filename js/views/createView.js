@@ -1,6 +1,7 @@
 import { createPost } from "../api.js";
 import { showToast } from "../ui.js";
 import { validatePostForm } from "../validation.js";
+import { addLocalPost } from "../store.js";
 
 export const renderCreate = (container) => {
     container.innerHTML = `
@@ -53,11 +54,25 @@ const bindEvents = () => {
         submitBtn.textContent = "Publicando...";
 
         try {
-            await createPost({
+            const response = await createPost({
                 title: fields.title.trim(),
                 body: fields.body.trim(),
                 userId: 1,
             });
+
+            // Guardar el post creado localmente con datos completos
+            // para que aparezca en la lista y en el detalle
+            const localPost = {
+                id: response.id,
+                title: fields.title.trim(),
+                body: fields.body.trim(),
+                userId: 1,
+                tags: [],
+                reactions: { likes: 0, dislikes: 0 },
+                views: 0,
+                _authorName: fields.author.trim(),
+            };
+            addLocalPost(localPost);
 
             showToast("Post creado correctamente.");
             setTimeout(() => {

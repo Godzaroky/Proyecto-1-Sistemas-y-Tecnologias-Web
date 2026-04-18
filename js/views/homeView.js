@@ -2,6 +2,7 @@ import { getPosts, searchPosts, getPostsByTag, getTags } from "../api.js";
 import { showSpinner, showError, showEmpty } from "../ui.js";
 import { truncate } from "../utils/helpers.js";
 import { POSTS_PER_PAGE } from "../utils/constants.js";
+import { applyLocalChanges, getLocalCreatedPosts } from "../store.js";
 
 let currentPage = 1;
 let currentTag = "";
@@ -30,7 +31,17 @@ const loadPosts = async (container, tags) => {
             data = await getPosts(currentPage, POSTS_PER_PAGE);
         }
 
-        if (!data.posts || data.posts.length === 0) {
+        // Aplicar cambios locales (eliminar los borrados, aplicar ediciones)
+        let posts = applyLocalChanges(data.posts || []);
+
+        // Agregar posts creados localmente al inicio (solo en la primera página sin filtros)
+        if (!currentSearch && !currentTag && currentPage === 1) {
+            const localPosts = getLocalCreatedPosts();
+            // Filtrar los locales por búsqueda si aplica
+            posts = [...localPosts, ...posts];
+        }
+
+        if (!posts || posts.length === 0) {
             showEmpty(container);
             return;
         }
@@ -57,7 +68,7 @@ const loadPosts = async (container, tags) => {
                 </div>
 
                 <div class="posts-grid">
-                    ${data.posts.map(post => `
+                    ${posts.map(post => `
                         <article class="card" data-id="${post.id}">
                             <h3 class="card__title">${post.title}</h3>
                             <p class="card__body">${truncate(post.body)}</p>
