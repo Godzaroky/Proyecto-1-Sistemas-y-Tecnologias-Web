@@ -25,6 +25,9 @@
     ·
     <a href="https://github.com/Godzaroky/Proyecto-1-Sistemas-y-Tecnologias-Web/issues/new?labels=enhancement">Solicitar Feature</a>
   </p>
+  <p>
+    <a href="https://youtu.be/CRin_uxVOuY">Video Explicativo</a>
+  </p>
 </div>
 
 <!-- TABLE OF CONTENTS -->
